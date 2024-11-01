@@ -111,7 +111,7 @@ if uploaded_files:
             x='Percentage',
             y=results_df['Color Number'],
             orientation='h',
-            title=f'Normative Colors in Image: {uploaded_file.name}',
+            title='Normative Colors in Image by Percentage',
             labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
             text=results_df['Percentage'].apply(lambda x: f'{x:.2f}%'),
             color=results_df['Closest Normative Color'],
