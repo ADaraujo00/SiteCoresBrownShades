@@ -94,47 +94,46 @@ def load_palette_image():
 # Interface do Streamlit
 st.title("Análise de Cores em Imagens")
 
-uploaded_files = st.file_uploader("Escolha uma ou mais imagens...", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "jpeg", "png"])
 
-if uploaded_files:
-    for uploaded_file in uploaded_files:
-        image = Image.open(uploaded_file)
-        image_processed, results_df = process_image(image)
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    image_processed, results_df = process_image(image)
 
-        # Desconsiderar cores com porcentagem menor que 1%
-        results_df = results_df[results_df['Percentage'] >= 1]
+    # Desconsiderar cores com porcentagem menor que 1%
+    results_df = results_df[results_df['Percentage'] >= 1]
 
-        color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
+    color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-        fig = px.bar(
-            results_df,
-            x='Percentage',
-            y=results_df['Color Number'],
-            orientation='h',
-            title='Normative Colors in Image by Percentage',
-            labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
-            text=results_df['Percentage'].apply(lambda x: f'{x:.2f}%'),
-            color=results_df['Closest Normative Color'],
-            color_discrete_map=color_map,
-            height=800,
-            width=1000,
+    fig = px.bar(
+        results_df,
+        x='Percentage',
+        y=results_df['Color Number'],
+        orientation='h',
+        title='Normative Colors in Image by Percentage',
+        labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
+        text=results_df['Percentage'].apply(lambda x: f'{x:.2f}%'),
+        color=results_df['Closest Normative Color'],
+        color_discrete_map=color_map,
+        height=800,
+        width=1000,
+    )
+
+    fig.update_layout(yaxis={'categoryorder': 'array',
+                             'categoryarray': results_df['Color Number'][::-1]},
+                      plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
+
+    # Adiciona a imagem da paleta no canto superior direito do gráfico (ajustada)
+    fig.add_layout_image(
+        dict(
+            source=load_palette_image(),
+            xref="paper", yref="paper",
+            x=1.25, y=0.5,
+            sizex=0.30, sizey=0.30,
+            xanchor="right", yanchor="top"
         )
+    )
 
-        fig.update_layout(yaxis={'categoryorder': 'array',
-                                 'categoryarray': results_df['Color Number'][::-1]},
-                          plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
-
-        # Adiciona a imagem da paleta no canto superior direito do gráfico (ajustada)
-        fig.add_layout_image(
-            dict(
-                source=load_palette_image(),
-                xref="paper", yref="paper",
-                x=1.25, y=0.5,
-                sizex=0.30, sizey=0.30,
-                xanchor="right", yanchor="top"
-            )
-        )
-
-        st.image(image, caption=f'Imagem Carregada: {uploaded_file.name}', use_column_width=True)
-        st.plotly_chart(fig)
-        st.dataframe(results_df.round(2))
+    st.image(image, caption='Imagem Carregada', use_column_width=True)
+    st.plotly_chart(fig)
+    st.dataframe(results_df.round(2))
