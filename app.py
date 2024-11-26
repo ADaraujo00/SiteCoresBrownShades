@@ -7,7 +7,6 @@ from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.express as px
 import base64
-import io
 
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
@@ -100,8 +99,8 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_processed, results_df = process_image(image)
 
-    # Desconsiderar cores com porcentagem menor que 1%
-    results_df = results_df[results_df['Percentage'] >= 1]
+    # Desconsiderar cores com porcentagem menor que 0.5%
+    results_df = results_df[results_df['Percentage'] >= 0.5]
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
