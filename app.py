@@ -7,6 +7,7 @@ from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.express as px
 import base64
+import io
 
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
@@ -72,32 +73,15 @@ def process_image(image):
         lambda x: eval(x))
     normative_color_df.sort_values(by='Color Sort Key', inplace=True)
 
-    # Mapeamento das cores para números conforme solicitado
-    color_to_number = {
-        str([77, 62, 59]): 17,
-        str([93, 71, 63]): 16,
-        str([108, 81, 67]): 15,
-        str([124, 91, 71]): 14,
-        str([140, 102, 76]): 13,
-        str([157, 112, 80]): 12,
-        str([173, 123, 84]): 11,
-        str([190, 134, 88]): 10,
-        str([200, 148, 102]): 9,
-        str([210, 162, 115]): 8,
-        str([219, 176, 129]): 7,
-        str([229, 190, 143]): 6,
-        str([238, 205, 157]): 5,
-        str([247, 219, 172]): 4
-    }
-
-    # Verificação adicional para garantir que todas as cores estejam no dicionário
-    normative_color_df = normative_color_df[normative_color_df['Closest Normative Color'].isin(color_to_number.keys())]
+    # Mapeamento das cores para números (invertido)
+    color_to_number = {str(tuple(color)): i for i,
+                       color in enumerate(normative_colors[::-1], start=4)}
 
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
-    # Remove rows with porcentagem menor que 0.5%
-    normative_color_df = normative_color_df[normative_color_df['Percentage'] >= 0.5]
+    # Remove rows with zero percentage
+    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
@@ -115,6 +99,9 @@ uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "jpeg", "
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_processed, results_df = process_image(image)
+
+    # Desconsiderar cores com porcentagem menor que 1%
+    results_df = results_df[results_df['Percentage'] >= 1]
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
