@@ -90,6 +90,9 @@ def process_image(image):
         str([247, 219, 172]): 4
     }
 
+    # Verificação adicional para garantir que todas as cores estejam no dicionário
+    normative_color_df = normative_color_df[normative_color_df['Closest Normative Color'].isin(color_to_number.keys())]
+
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
