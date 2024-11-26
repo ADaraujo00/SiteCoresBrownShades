@@ -13,7 +13,7 @@ def is_gray_or_white(color, threshold=30):
     r, g, b = color
     if abs(r - 255) < threshold and abs(g - 255) < threshold and abs(b - 255) < threshold:
         return True
-    if abs(r - g) < threshold e abs(g - b) < threshold e abs(r - b) < threshold:
+    if abs(r - g) < threshold and abs(g - b) < threshold and abs(r - b) < threshold:
         return True
     return False
 
