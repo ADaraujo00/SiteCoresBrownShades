@@ -11,9 +11,9 @@ import base64
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
     r, g, b = color
-    if abs(r - 255) < threshold and abs(g - 255) < threshold and abs(b - 255) < threshold:
+    if abs(r - 255) < threshold and abs(g - 255) < threshold e abs(b - 255) < threshold:
         return True
-    if abs(r - g) < threshold and abs(g - b) < threshold and abs(r - b) < threshold:
+    if abs(r - g) < threshold e abs(g - b) < threshold e abs(r - b) < threshold:
         return True
     return False
 
@@ -72,18 +72,29 @@ def process_image(image):
         lambda x: eval(x))
     normative_color_df.sort_values(by='Color Sort Key', inplace=True)
 
-    # Mapeamento das cores para números (invertido)
-    color_to_number = {str(tuple(color)): i for i,
-                       color in enumerate(normative_colors[::-1], start=4)}
+    # Mapeamento das cores para números conforme solicitado
+    color_to_number = {
+        str([77, 62, 59]): 17,
+        str([93, 71, 63]): 16,
+        str([108, 81, 67]): 15,
+        str([124, 91, 71]): 14,
+        str([140, 102, 76]): 13,
+        str([157, 112, 80]): 12,
+        str([173, 123, 84]): 11,
+        str([190, 134, 88]): 10,
+        str([200, 148, 102]): 9,
+        str([210, 162, 115]): 8,
+        str([219, 176, 129]): 7,
+        str([229, 190, 143]): 6,
+        str([238, 205, 157]): 5,
+        str([247, 219, 172]): 4
+    }
 
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
     # Remove rows with porcentagem menor que 0.5%
     normative_color_df = normative_color_df[normative_color_df['Percentage'] >= 0.5]
-
-    # Reassign continuous numbers to the remaining colors
-    normative_color_df['Continuous Color Number'] = range(1, len(normative_color_df) + 1)
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
@@ -107,7 +118,7 @@ if uploaded_file is not None:
     fig = px.bar(
         results_df,
         x='Percentage',
-        y=results_df['Continuous Color Number'],
+        y=results_df['Color Number'],
         orientation='h',
         title='Normative Colors in Image by Percentage',
         labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
@@ -119,7 +130,7 @@ if uploaded_file is not None:
     )
 
     fig.update_layout(yaxis={'categoryorder': 'array',
-                             'categoryarray': results_df['Continuous Color Number'][::-1]},
+                             'categoryarray': results_df['Color Number'][::-1]},
                       plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
 
     # Adiciona a imagem da paleta no canto superior direito do gráfico (ajustada)
