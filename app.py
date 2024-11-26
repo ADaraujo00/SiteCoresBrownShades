@@ -102,6 +102,9 @@ if uploaded_file is not None:
     # Desconsiderar cores com porcentagem menor que 0.5%
     results_df = results_df[results_df['Percentage'] >= 0.5]
 
+    # Reatribuir os números das cores para remover espaços em branco
+    results_df['Color Number'] = range(1, len(results_df) + 1)
+
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
     fig = px.bar(
