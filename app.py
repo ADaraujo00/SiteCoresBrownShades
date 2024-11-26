@@ -7,6 +7,7 @@ from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.express as px
 import base64
+import io
 
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
@@ -79,11 +80,8 @@ def process_image(image):
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
-    # Remove rows with porcentagem menor que 0.5%
-    normative_color_df = normative_color_df[normative_color_df['Percentage'] >= 0.5]
-
-    # Reassign continuous numbers to the remaining colors
-    normative_color_df['Continuous Color Number'] = range(1, len(normative_color_df) + 1)
+    # Remove rows with zero percentage
+    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
@@ -102,12 +100,15 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_processed, results_df = process_image(image)
 
+    # Desconsiderar cores com porcentagem menor que 1%
+    results_df = results_df[results_df['Percentage'] >= 1]
+
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
     fig = px.bar(
         results_df,
         x='Percentage',
-        y=results_df['Continuous Color Number'],
+        y=results_df['Color Number'],
         orientation='h',
         title='Normative Colors in Image by Percentage',
         labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
@@ -119,7 +120,7 @@ if uploaded_file is not None:
     )
 
     fig.update_layout(yaxis={'categoryorder': 'array',
-                             'categoryarray': results_df['Continuous Color Number'][::-1]},
+                             'categoryarray': results_df['Color Number'][::-1]},
                       plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
 
     # Adiciona a imagem da paleta no canto superior direito do gráfico (ajustada)
