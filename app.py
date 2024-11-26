@@ -80,8 +80,8 @@ def process_image(image):
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
-    # Remove rows with zero percentage
-    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0]
+    # Remove rows with porcentagem menor que 0,5%
+    normative_color_df = normative_color_df[normative_color_df['Percentage'] >= 0.5]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
@@ -99,9 +99,6 @@ uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "jpeg", "
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_processed, results_df = process_image(image)
-
-    # Desconsiderar cores com porcentagem menor que 1%
-    results_df = results_df[results_df['Percentage'] >= 1]
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
