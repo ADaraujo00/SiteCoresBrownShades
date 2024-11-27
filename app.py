@@ -105,6 +105,10 @@ if uploaded_file is not None:
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
+    # Filtrar o DataFrame para remover linhas com porcentagem igual a 0%
+    results_df = results_df[results_df['Percentage'] > 0]
+
+    # Criar o gráfico de barras com Plotly
     fig = px.bar(
         results_df,
         x='Percentage',
@@ -119,11 +123,11 @@ if uploaded_file is not None:
         width=1000,
     )
 
-    fig.update_layout(yaxis={'categoryorder': 'array',
-                             'categoryarray': results_df['Color Number'][::-1]},
+    # Atualizar o layout do gráfico para ordenar o eixo y
+    fig.update_layout(yaxis={'categoryorder': 'array', 'categoryarray': results_df['Color Number'][::-1]},
                       plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
 
-    # Adiciona a imagem da paleta no canto superior direito do gráfico (ajustada)
+    # Adicionar a imagem da paleta no canto superior direito do gráfico (ajustada)
     fig.add_layout_image(
         dict(
             source=load_palette_image(),
