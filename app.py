@@ -80,8 +80,8 @@ def process_image(image):
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
-    # Remove rows with zero percentage
-    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0.5]
+    # Remove rows with percentage less than 0.5%
+    normative_color_df = normative_color_df[normative_color_df['Percentage'] >= 0.5]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
@@ -105,8 +105,8 @@ if uploaded_file is not None:
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-    # Filtrar o DataFrame para remover linhas com porcentagem igual a 0%
-    results_df = results_df[results_df['Percentage'] > 0]
+    # Filtrar o DataFrame para remover linhas com porcentagem menor que 0.5%
+    results_df = results_df[results_df['Percentage'] >= 0.5]
 
     # Criar o gráfico de barras com Plotly
     fig = px.bar(
