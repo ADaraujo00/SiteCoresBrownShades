@@ -81,7 +81,7 @@ def process_image(image):
         lambda x: color_to_number[x])
 
     # Remove rows with zero percentage
-    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0]
+    normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0.5]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
 
