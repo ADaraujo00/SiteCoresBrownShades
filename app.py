@@ -124,7 +124,7 @@ if uploaded_file is not None:
     )
 
     # Atualizar o layout do gráfico para ordenar o eixo y
-    fig.update_layout(yaxis={'categoryorder': 'array', 'categoryarray': results_df['Color Number'][::-1]},
+    fig.update_layout(yaxis={'categoryorder': 'array', 'categoryarray': results_df['Color Number']},
                       plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
 
     # Adicionar a imagem da paleta no canto superior direito do gráfico (ajustada)
