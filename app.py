@@ -23,12 +23,10 @@ def process_image(image):
     image = image.convert('RGB')
     image = image.resize((image.width // 4, image.height // 4))
     colors = np.array(image.getdata())
-    filtered_colors = np.array(
-        [color for color in colors if not is_gray_or_white(color)])
+    filtered_colors = np.array([color for color in colors if not is_gray_or_white(color)])
 
     n_colors = 14
-    kmeans = KMeans(n_clusters=n_colors, random_state=0,
-                    n_init=10, max_iter=300)
+    kmeans = KMeans(n_clusters=n_colors, random_state=0, n_init=10, max_iter=300)
     kmeans.fit(filtered_colors)
 
     quantized_colors = kmeans.cluster_centers_.astype(int)
@@ -44,10 +42,8 @@ def process_image(image):
     color_df['Percentage'] = (color_df['Count'] / total_pixels) * 100
 
     normative_colors = [
-        [77, 62, 59], [93, 71, 63], [108, 81, 67], [
-            124, 91, 71], [140, 102, 76],
-        [157, 112, 80], [173, 123, 84], [190, 134, 88], [
-            200, 148, 102], [210, 162, 115],
+        [77, 62, 59], [93, 71, 63], [108, 81, 67], [124, 91, 71], [140, 102, 76],
+        [157, 112, 80], [173, 123, 84], [190, 134, 88], [200, 148, 102], [210, 162, 115],
         [219, 176, 129], [229, 190, 143], [238, 205, 157], [247, 219, 172]
     ]
 
@@ -66,16 +62,14 @@ def process_image(image):
 
     normative_color_df = color_df.groupby('Closest Normative Color').agg({
         'Percentage': 'sum'}).reset_index()
-    normative_color_df['Closest Normative Color'] = normative_color_df['Closest Normative Color'].apply(
-        str)
+    normative_color_df['Closest Normative Color'] = normative_color_df['Closest Normative Color'].apply(str)
 
     normative_color_df['Color Sort Key'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: eval(x))
     normative_color_df.sort_values(by='Color Sort Key', inplace=True)
 
     # Mapeamento das cores para números (invertido)
-    color_to_number = {str(tuple(color)): i for i,
-                       color in enumerate(normative_colors[::-1], start=4)}
+    color_to_number = {str(tuple(color)): i for i, color in enumerate(normative_colors[::-1], start=4)}
 
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
@@ -100,13 +94,10 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     image_processed, results_df = process_image(image)
 
-    # Desconsiderar cores com porcentagem menor que 1%
-    results_df = results_df[results_df['Percentage'] >= 1]
+    # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
+    results_df = results_df[results_df['Percentage'] > 0]
 
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
-
-    # Filtrar o DataFrame para remover linhas com porcentagem menor que 0.5%
-    results_df = results_df[results_df['Percentage'] >= 0.5]
 
     # Criar o gráfico de barras com Plotly
     fig = px.bar(
@@ -123,11 +114,18 @@ if uploaded_file is not None:
         width=1000,
     )
 
-    # Atualizar o layout do gráfico para ordenar o eixo y
-    fig.update_layout(yaxis={'categoryorder': 'array', 'categoryarray': results_df['Color Number']},
-                      plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF', font=dict(color='black'))
+    # Atualizar o layout do gráfico para ordenar o eixo y de forma contínua
+    fig.update_layout(
+        yaxis={
+            'categoryorder': 'array',  # Ordenar categorias do eixo Y
+            'categoryarray': results_df['Color Number'].values  # Usar a ordem dos números de cor
+        },
+        plot_bgcolor='#FFFFFF',
+        paper_bgcolor='#FFFFFF',
+        font=dict(color='black')
+    )
 
-    # Adicionar a imagem da paleta no canto superior direito do gráfico (ajustada)
+    # Adicionar a imagem da paleta no canto superior direito do gráfico
     fig.add_layout_image(
         dict(
             source=load_palette_image(),
