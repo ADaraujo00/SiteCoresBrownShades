@@ -7,7 +7,6 @@ from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.express as px
 import base64
-import io
 
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
@@ -74,7 +73,7 @@ def process_image(image):
     normative_color_df['Color Number'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: color_to_number[x])
 
-    # Remove rows with percentage less than 0.5% and 0% 
+    # Remove rows with percentage less than 0.5% and 0%
     normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0.5]
 
     return image, normative_color_df.drop(columns=['Color Sort Key'])
@@ -97,32 +96,20 @@ if uploaded_file is not None:
     # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
     results_df = results_df[results_df['Percentage'] > 0]
 
+    # Mapeamento das cores para RGB
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-    # Criar o gráfico de barras com Plotly
-    fig = px.bar(
+    # Criar o gráfico de pizza com Plotly
+    fig = px.pie(
         results_df,
-        x='Percentage',
-        y=results_df['Color Number'],
-        orientation='h',
-        title='Normative Colors in Image by Percentage',
-        labels={'Percentage': 'Percentage(%)', 'y': 'Color Number'},
-        text=results_df['Percentage'].apply(lambda x: f'{x:.2f}%'),
-        color=results_df['Closest Normative Color'],
+        names='Closest Normative Color',
+        values='Percentage',
+        title='Cores Normativas na Imagem por Porcentagem',
+        color='Closest Normative Color',
         color_discrete_map=color_map,
-        height=800,
-        width=1000,
-    )
-
-    # Atualizar o layout do gráfico para ordenar o eixo y de forma contínua
-    fig.update_layout(
-        yaxis={
-            'categoryorder': 'array',  # Ordenar categorias do eixo Y
-            'categoryarray': results_df['Color Number'].values  # Usar a ordem dos números de cor
-        },
-        plot_bgcolor='#FFFFFF',
-        paper_bgcolor='#FFFFFF',
-        font=dict(color='black')
+        hole=0.3,  # Tornar o gráfico em forma de rosca
+        labels={'Closest Normative Color': 'Cor Normativa', 'Percentage': 'Porcentagem (%)'},
+        height=800
     )
 
     # Adicionar a imagem da paleta no canto superior direito do gráfico
