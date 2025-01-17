@@ -112,6 +112,21 @@ if uploaded_file is not None:
         height=800
     )
 
+    # Atualizar o layout do gráfico para mudar o tamanho das fontes
+    fig.update_layout(
+        title_font_size=24,  # Tamanho da fonte do título
+        font=dict(
+            family="Arial, sans-serif",  # Fonte do gráfico
+            size=14,  # Tamanho da fonte para os rótulos
+            color="black"  # Cor da fonte
+        ),
+        legend=dict(
+            font=dict(
+                size=12  # Tamanho da fonte da legenda
+            )
+        )
+    )
+
     # Adicionar a imagem da paleta no canto superior direito do gráfico
     fig.add_layout_image(
         dict(
