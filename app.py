@@ -117,12 +117,12 @@ if uploaded_file is not None:
         title_font_size=24,  # Tamanho da fonte do título
         font=dict(
             family="Arial, sans-serif",  # Fonte do gráfico
-            size=14,  # Tamanho da fonte para os rótulos
+            size=25,  # Tamanho da fonte para os rótulos
             color="black"  # Cor da fonte
         ),
         legend=dict(
             font=dict(
-                size=30  # Tamanho da fonte da legenda
+                size=12  # Tamanho da fonte da legenda
             )
         )
     )
