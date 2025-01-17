@@ -122,7 +122,7 @@ if uploaded_file is not None:
         ),
         legend=dict(
             font=dict(
-                size=12  # Tamanho da fonte da legenda
+                size=30  # Tamanho da fonte da legenda
             )
         )
     )
