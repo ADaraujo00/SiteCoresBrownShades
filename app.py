@@ -132,7 +132,7 @@ if uploaded_file is not None:
         dict(
             source=load_palette_image(),
             xref="paper", yref="paper",
-            x=1.20, y=0.2,
+            x=1.25, y=0.2,
             sizex=0.30, sizey=0.30,
             xanchor="right", yanchor="top"
         )
