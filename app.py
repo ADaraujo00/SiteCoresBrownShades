@@ -65,6 +65,8 @@ def process_image(image):
 
     normative_color_df['Color Sort Key'] = normative_color_df['Closest Normative Color'].apply(
         lambda x: eval(x))
+    
+    # Ordenar o DataFrame pela tonalidade das cores (Color Sort Key)
     normative_color_df.sort_values(by='Color Sort Key', inplace=True)
 
     # Mapeamento das cores para números (invertido)
