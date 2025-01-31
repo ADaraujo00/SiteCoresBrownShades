@@ -98,10 +98,13 @@ if uploaded_file is not None:
     # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
     results_df = results_df[results_df['Percentage'] > 0]
 
+    # Ordenar o DataFrame pela tonalidade das cores
+    results_df = results_df.sort_values(by='Color Number')
+
     # Mapeamento das cores para RGB
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-    # Criar o gráfico de pizza com Plotly e ordenar pela tonalidade das cores
+    # Criar o gráfico de pizza com Plotly
     fig = px.pie(
         results_df,
         names='Closest Normative Color',
@@ -111,9 +114,9 @@ if uploaded_file is not None:
         color_discrete_map=color_map,
         hole=0.3,
         labels={'Closest Normative Color': 'Cor Normativa', 'Percentage': 'Porcentagem (%)'},
-        height=800,
-        category_orders={'Closest Normative Color': list(results_df.sort_values(by='Color Number')['Closest Normative Color'])}
+        height=800
     )
+    fig.update_traces(sort=False)
 
     # Atualizar o layout do gráfico para mudar o tamanho das fontes
     fig.update_layout(
