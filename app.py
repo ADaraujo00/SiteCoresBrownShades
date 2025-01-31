@@ -101,7 +101,7 @@ if uploaded_file is not None:
     # Mapeamento das cores para RGB
     color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-    # Criar o gráfico de pizza com Plotly
+    # Criar o gráfico de pizza com Plotly e ordenar pela tonalidade das cores
     fig = px.pie(
         results_df,
         names='Closest Normative Color',
@@ -109,22 +109,23 @@ if uploaded_file is not None:
         title='Cores Normativas na Imagem por Porcentagem',
         color='Closest Normative Color',
         color_discrete_map=color_map,
-        hole=0.3,  # Tornar o gráfico em forma de rosca
+        hole=0.3,
         labels={'Closest Normative Color': 'Cor Normativa', 'Percentage': 'Porcentagem (%)'},
-        height=800
+        height=800,
+        category_orders={'Closest Normative Color': list(results_df.sort_values(by='Color Number')['Closest Normative Color'])}
     )
 
     # Atualizar o layout do gráfico para mudar o tamanho das fontes
     fig.update_layout(
-        title_font_size=24,  # Tamanho da fonte do título
+        title_font_size=24,
         font=dict(
-            family="Arial, sans-serif",  # Fonte do gráfico
-            size=25,  # Tamanho da fonte para os rótulos
-            color="black"  # Cor da fonte
+            family="Arial, sans-serif",
+            size=25,
+            color="black"
         ),
         legend=dict(
             font=dict(
-                size=12  # Tamanho da fonte da legenda
+                size=12
             )
         )
     )
