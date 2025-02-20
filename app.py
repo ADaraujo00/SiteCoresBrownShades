@@ -158,11 +158,11 @@ if uploaded_file is not None:
         mode='markers',
         marker=dict(
             size=5,
-            color=[f'rgb{color}' for color in pixel_df['Color']],
+            color=[f'rgb{color[0]},{color[1]},{color[2]}' for color in pixel_df['Color']],
             showscale=False
         ),
         hoverinfo='text',
-        text=[f'Cor: rgb{color}' for color in pixel_df['Color']]
+        text=[f'Cor: rgb{color[0]},{color[1]},{color[2]}' for color in pixel_df['Color']]
     ))
 
     scatter_fig.update_layout(
