@@ -5,7 +5,6 @@ import numpy as np
 from collections import Counter
 from sklearn.cluster import KMeans
 from scipy.spatial import distance
-import plotly.graph_objects as go
 import plotly.express as px
 import base64
 
@@ -79,13 +78,7 @@ def process_image(image):
     # Remove rows with percentage less than 0.5% and 0%
     normative_color_df = normative_color_df[normative_color_df['Percentage'] > 0.5]
 
-    # Adicionar coordenadas dos pixels
-    width, height = image.size
-    coordinates = [(x, y) for y in range(height) for x in range(width)]
-    pixel_df = pd.DataFrame(coordinates, columns=['x', 'y'])
-    pixel_df['Color'] = [tuple(color) for color in colors]
-
-    return image, normative_color_df.drop(columns=['Color Sort Key']), pixel_df
+    return image, normative_color_df.drop(columns=['Color Sort Key'])
 
 # Função para carregar a imagem da paleta
 def load_palette_image():
@@ -100,7 +93,7 @@ uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "jpeg", "
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    image_processed, results_df, pixel_df = process_image(image)
+    image_processed, results_df = process_image(image)
 
     # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
     results_df = results_df[results_df['Percentage'] > 0]
@@ -151,30 +144,6 @@ if uploaded_file is not None:
         )
     )
 
-    # Criar gráfico de dispersão interativo
-    scatter_fig = go.Figure(data=go.Scatter(
-        x=pixel_df['x'],
-        y=pixel_df['y'],
-        mode='markers',
-        marker=dict(
-            size=5,
-            color=[f'rgb({color[0]},{color[1]},{color[2]})' for color in pixel_df['Color']],
-            showscale=False
-        ),
-        hoverinfo='text',
-        text=[f'Cor: rgb({color[0]},{color[1]},{color[2]})' for color in pixel_df['Color']]
-    ))
-
-    scatter_fig.update_layout(
-        title='Imagem Interativa',
-        xaxis=dict(visible=False),
-        yaxis=dict(visible=False),
-        height=800,
-        width=800,
-        hovermode='closest'
-    )
-
     st.image(image, caption='Imagem Carregada', use_column_width=True)
     st.plotly_chart(fig)
-    st.plotly_chart(scatter_fig)
     st.dataframe(results_df.round(2))
