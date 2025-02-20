@@ -6,6 +6,7 @@ from collections import Counter
 from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.graph_objects as go
+import plotly.express as px
 import base64
 
 # Função para verificar se uma cor é próxima de cinza ou branco
