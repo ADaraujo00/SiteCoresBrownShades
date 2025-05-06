@@ -92,58 +92,61 @@ st.title("Análise de Cores em Imagens")
 uploaded_file = st.file_uploader("Escolha uma imagem...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    image_processed, results_df = process_image(image)
+    try:
+        image = Image.open(uploaded_file)
+        image_processed, results_df = process_image(image)
 
-    # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
-    results_df = results_df[results_df['Percentage'] > 0]
+        # Filtrar o DataFrame para remover linhas com porcentagem menor que 0%
+        results_df = results_df[results_df['Percentage'] > 0]
 
-    # Ordenar o DataFrame pela tonalidade das cores
-    results_df = results_df.sort_values(by='Color Number')
+        # Ordenar o DataFrame pela tonalidade das cores
+        results_df = results_df.sort_values(by='Color Number')
 
-    # Mapeamento das cores para RGB
-    color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
+        # Mapeamento das cores para RGB
+        color_map = {str(tuple(color)): f'rgb{tuple(color)}' for color in results_df['Closest Normative Color'].apply(eval)}
 
-    # Criar o gráfico de pizza com Plotly
-    fig = px.pie(
-        results_df,
-        names='Closest Normative Color',
-        values='Percentage',
-        title='Cores Normativas na Imagem por Porcentagem',
-        color='Closest Normative Color',
-        color_discrete_map=color_map,
-        hole=0.3,
-        labels={'Closest Normative Color': 'Cor Normativa', 'Percentage': 'Porcentagem (%)'},
-        height=800
-    )
-    fig.update_traces(sort=False)
+        # Criar o gráfico de pizza com Plotly
+        fig = px.pie(
+            results_df,
+            names='Closest Normative Color',
+            values='Percentage',
+            title='Cores Normativas na Imagem por Porcentagem',
+            color='Closest Normative Color',
+            color_discrete_map=color_map,
+            hole=0.3,
+            labels={'Closest Normative Color': 'Cor Normativa', 'Percentage': 'Porcentagem (%)'},
+            height=800
+        )
+        fig.update_traces(sort=False)
 
-    # Atualizar o layout do gráfico para mudar o tamanho das fontes
-    fig.update_layout(
-        title_font_size=24,
-        font=dict(
-            family="Arial, sans-serif",
-            size=25,
-            color="black"
-        ),
-        legend=dict(
+        # Atualizar o layout do gráfico para mudar o tamanho das fontes
+        fig.update_layout(
+            title_font_size=24,
             font=dict(
-                size=12
+                family="Arial, sans-serif",
+                size=25,
+                color="black"
+            ),
+            legend=dict(
+                font=dict(
+                    size=12
+                )
             )
         )
-    )
 
-    # Adicionar a imagem da paleta no canto superior direito do gráfico
-    fig.add_layout_image(
-        dict(
-            source=load_palette_image(),
-            xref="paper", yref="paper",
-            x=1.22, y=0.15,
-            sizex=0.30, sizey=0.30,
-            xanchor="right", yanchor="top"
+        # Adicionar a imagem da paleta no canto superior direito do gráfico
+        fig.add_layout_image(
+            dict(
+                source=load_palette_image(),
+                xref="paper", yref="paper",
+                x=1.22, y=0.15,
+                sizex=0.30, sizey=0.30,
+                xanchor="right", yanchor="top"
+            )
         )
-    )
 
-    st.image(image, caption='Imagem Carregada', use_column_width=True)
-    st.plotly_chart(fig)
-    st.dataframe(results_df.round(2))
+        st.image(image, caption='Imagem Carregada', use_column_width=True)
+        st.plotly_chart(fig)
+        st.dataframe(results_df.round(2))
+    except Exception as e:
+        st.error(f"Erro ao processar o arquivo: {e}")
