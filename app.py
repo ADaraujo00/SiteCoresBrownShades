@@ -141,4 +141,31 @@ if uploaded_file is not None:
                 source=load_palette_image(),
                 xref="paper", yref="paper",
                 x=1.22, y=0.15,
-                sizex=0.30, sizey=0
+                sizex=0.30, sizey=0.30,
+                xanchor="right", yanchor="top"
+            )
+        )
+
+        st.image(image, caption='Imagem Carregada', use_column_width=True)
+        st.plotly_chart(fig)
+        st.dataframe(results_df.round(2))
+    except Exception as e:
+        st.error(f"Erro ao processar o arquivo: {e}")
+
+# Função para verificar arquivos que começam com 'RIFF'
+def check_riff_files():
+    riff_files = []
+    for i, filename in enumerate(os.listdir('./')):
+        with open(filename, 'rb') as imageFile:
+            if imageFile.read().startswith(b'RIFF'):
+                riff_files.append(filename)
+    return riff_files
+
+# Verificar e exibir arquivos que começam com 'RIFF'
+riff_files = check_riff_files()
+if riff_files:
+    st.write("Arquivos que começam com 'RIFF':")
+    for i, filename in enumerate(riff_files):
+        st.write(f"{i}: {filename} - found!")
+else:
+    st.write("Nenhum arquivo que começa com 'RIFF' foi encontrado.")
