@@ -156,9 +156,10 @@ if uploaded_file is not None:
 def check_riff_files():
     riff_files = []
     for i, filename in enumerate(os.listdir('./')):
-        with open(filename, 'rb') as imageFile:
-            if imageFile.read().startswith(b'RIFF'):
-                riff_files.append(filename)
+        if os.path.isfile(filename):
+            with open(filename, 'rb') as imageFile:
+                if imageFile.read().startswith(b'RIFF'):
+                    riff_files.append(filename)
     return riff_files
 
 # Verificar e exibir arquivos que começam com 'RIFF'
