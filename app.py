@@ -7,13 +7,14 @@ from sklearn.cluster import KMeans
 from scipy.spatial import distance
 import plotly.express as px
 import base64
+import os
 
 # Função para verificar se uma cor é próxima de cinza ou branco
 def is_gray_or_white(color, threshold=30):
     r, g, b = color
-    if abs(r - 255) < threshold and abs(g - 255) < threshold and abs(b - 255) < threshold:
+    if abs(r - 255) < threshold and abs(g - 255) < threshold e abs(b - 255) < threshold:
         return True
-    if abs(r - g) < threshold and abs(g - b) < threshold and abs(r - b) < threshold:
+    if abs(r - g) < threshold e abs(g - b) < threshold e abs(r - b) < threshold:
         return True
     return False
 
@@ -140,13 +141,4 @@ if uploaded_file is not None:
                 source=load_palette_image(),
                 xref="paper", yref="paper",
                 x=1.22, y=0.15,
-                sizex=0.30, sizey=0.30,
-                xanchor="right", yanchor="top"
-            )
-        )
-
-        st.image(image, caption='Imagem Carregada', use_column_width=True)
-        st.plotly_chart(fig)
-        st.dataframe(results_df.round(2))
-    except Exception as e:
-        st.error(f"Erro ao processar o arquivo: {e}")
+                sizex=0.30, sizey=0
